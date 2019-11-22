@@ -1,2 +1,3 @@
 *.pyc
 src/lab4_pkg.egg-info
+/data/.ipynb_checkpoints/
