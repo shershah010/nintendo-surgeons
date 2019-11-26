@@ -61,7 +61,7 @@ class SoftGripperInterface():
         self.tip_pos = np.array([0,0,0])
 
     def command_listener(self, msg):
-        """
+        """update_image
         Callback fn for gripper pump commands
 
         Parameters
@@ -103,7 +103,6 @@ class SoftGripperInterface():
         if self.im is None:
             return
         hsv = cv2.cvtColor(self.im, cv2.COLOR_BGR2HSV)
-
         a = time()
         mask = red_mask(hsv)
         # plt.imshow(mask, cmap='gray')
@@ -113,6 +112,10 @@ class SoftGripperInterface():
         if tmp_box.shape != (4,2):
             # print 'Only see {} board points'.format(tmp_box.shape[0])
             return
+        #np.sum gives an array of each x + y and argmin of s gives the smallest value of x + y 
+        #argmax of s gives largest value of x + y 
+        #np.diff gives an array of each x - y and argmin of d gives the smallest value of x - y
+        #argmax of d gives the largest value of x - y
         s = np.sum(tmp_box, axis=1)
         d = np.diff(tmp_box, axis=1)
         box = np.array([
@@ -121,8 +124,10 @@ class SoftGripperInterface():
             tmp_box[np.argmax(d)],
             tmp_box[np.argmax(s)]
         ])
+        #creates an array of 4 distinct points
 
         self.H, _ = cv2.findHomography(PROJECTED_BOX, box)
+        #creates a box from the four distinct points --> creates a plane
         # print 'homog time', time() - a
         # im_with_keypoints = cv2.drawKeypoints(self.im, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         # plt.imshow(cv2.cvtColor(im_with_keypoints, cv2.COLOR_BGR2RGB))
