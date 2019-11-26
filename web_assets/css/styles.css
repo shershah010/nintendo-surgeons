@@ -1,3 +1,109 @@
-h1, h2, h3, h4, h5, h6, p, li {
-  font-family: 'Solway', serif;
+body {
+  margin: 0px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: sans-serif;
+  font-size: 2em;
+}
+
+h1 {
+  font-size: 3em;
+}
+
+.container {
+  height: 67vh;
+  width: 100%;
+  position: relative;
+}
+
+.main-content {
+  margin: 0px 15vw;
+  height: 67vh;
+}
+
+.main-content:after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.extra-content {
+  display: hidden;
+  opacity: 0;
+  transition: all linear 1s;
+  height: 0%;
+}
+
+.show-extra {
+  display: block;
+  opacity: 1;
+  height: 100%;
+}
+
+.text-block {
+  margin: 0px 15vw;
+}
+
+.logo-img {
+  background-image: url("../img/A.jpg");
+  background-size: cover;
+  background-position: center;
+  width: 50vh;
+  height: 50vh;
+  border-radius: 100%;
+}
+
+.pull-left {
+  display: inline-block;
+  width: 50%;
+  float: left;
+  position: relative;
+  height: 100%;
+}
+
+.pull-right {
+  display: inline-block;
+  width: 50%;
+  float: right;
+  position: relative;
+  height: 100%;
+}
+
+.center {
+  text-align: center;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.loadbox {
+  padding: 50px 0px;
+  transition: all linear 1s;
+}
+
+.loadbox .loader {
+  position: relative;
+  top: 50px;
+  width: 0%;
+  height: 5px;
+  transition: all linear 1s;
+  background-color: #555;
+}
+
+.loadbox:hover {
+  /*background-color: #fafafa;*/
+  cursor: pointer;
+}
+
+.loadbox:hover .loader {
+  width: 100%;
+}
+
+.grey {
+  color: #666;
+}
+
+.subheading {
+  display: inline-block;
 }
