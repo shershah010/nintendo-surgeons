@@ -205,7 +205,63 @@ class SoftGripperInterface():
             return
         self.base_pos = finger_pts[np.argmin(finger_pts[:,1])]
         self.tip_pos = finger_pts[np.argmax(finger_pts[:,1])]
-
+        
+        #Joe's Email
+        #Ok I figured out how to do this properly:
+        #So if we have p0...p3 are the 3D positions of the corner points: [x y 0]. Points p0...p3 all lie on the same plane: A0. 
+        #p4 is the known 3D position of the top blue point in the same coordinate frame [x4 y4 z4] (note that this point has a z value because it is offset from the plane). 
+        #The position of p5 (the bottom blue dot) is unknown BUT we know that P5 lies on on the the same plane as p4: A1. Further we know that the normal vector of A0 is the same as the normal vector of A1: n0=n1=n
+        #Using the equation in the previous email you can compute g_CW the 4x4 transformation matrix that transforms points into the coordinate frame of the camera. Using this we can compute the normal vector of A1 in the camera frame as well as the 3D position of p4. However we still do not know the 3D position of p5, we only know the 2d position of the p5 in the camera frame. 
+        #Let C_p5, C_p4, C_n be the 3d positions of p5, p4 and n in the camera frame. Let x5= [u v 1] be the observed 2d position of p5 in the camera. 
+        #lambda* K^-1 * x5= C_p5, where K is the camera intrinsic matrix and lambda is unknown. 
+        #K^-1 * x5 represents a ray cast out from the camera. We can determine lambda by finding the intersection of this ray with the plane A1 in the camera frame. 
+        #This results in:
+        #lambda = (C_p4^T*C_n) / ((K^-1 * x5)^T * C_n)
+        #then: p5 = g_CW^-1 * C_p5.
+        
+        box_z_column = np.array([[0], [0], [0], [0]])
+        plane_points_3_d = np.append(PROJECTED_BOX, box_z_column,axis=1)
+        finger_pts_2_d = np.array([self.base_pos, self.tip_pos])
+        p0, p1, p2, p3 = plane_points[0], plane_points[1], plane_points[2], plane_points[3]
+        p4 = finger_pts[0]
+        #p5 = unknown
+        A0 = self.H
+        #A1 = plane of p4 and p5
+        g_CW = ComputePoseFromHomography(A0, PROJECTED_BOX, finger_pts_2_d)
+        
+    # This function takes in an intrinsics matrix, and two sets of 2d points
+    # if a pose can be computed it returns true along with a rotation and 
+    # translation between the sets of points. 
+    # returns false if a good pose estimate cannot be found
+    def ComputePoseFromHomography(new_intrinsics, referencePoints, imagePoints):
+        # compute homography using RANSAC, this allows us to compute
+        # the homography even when some matches are incorrect
+        homography, mask = cv2.findHomography(referencePoints, imagePoints, 
+                                              cv2.RANSAC, 5.0)
+        # check that enough matches are correct for a reasonable estimate
+        # correct matches are typically called inliers
+        MIN_INLIERS = 30
+        if(sum(mask)>MIN_INLIERS):
+            # given that we have a good estimate
+            # decompose the homography into Rotation and translation
+            # you are not required to know how to do this for this class
+            # but if you are interested please refer to:
+            # https://docs.opencv.org/master/d9/dab/tutorial_homography.html
+            RT = np.matmul(np.linalg.inv(new_intrinsics), homography)
+            norm = np.sqrt(np.linalg.norm(RT[:,0])*np.linalg.norm(RT[:,1]))
+            RT = -1*RT/norm
+            c1 = RT[:,0]
+            c2 = RT[:,1]
+            c3 = np.cross(c1,c2)
+            T = RT[:,2]
+            R = np.vstack((c1,c2,c3)).T
+            W,U,Vt = cv2.SVDecomp(R)
+            R = np.matmul(U,Vt)
+            return True, R, T
+        # return false if we could not comput a good estimate
+        return False, None, None
+#end of Joe's email + code for homography
+    
     def run(self):
         """
         Listens for states across serial and publishes to ROS
@@ -251,35 +307,3 @@ if __name__ == '__main__':
     rospy.init_node('soft_gripper_interface', anonymous=True)
     sgi = SoftGripperInterface()
     sgi.run()
-
-# This function takes in an intrinsics matrix, and two sets of 2d points
-# if a pose can be computed it returns true along with a rotation and 
-# translation between the sets of points. 
-# returns false if a good pose estimate cannot be found
-def ComputePoseFromHomography(new_intrinsics, referencePoints, imagePoints):
-    # compute homography using RANSAC, this allows us to compute
-    # the homography even when some matches are incorrect
-    homography, mask = cv2.findHomography(referencePoints, imagePoints, 
-                                          cv2.RANSAC, 5.0)
-    # check that enough matches are correct for a reasonable estimate
-    # correct matches are typically called inliers
-    MIN_INLIERS = 30
-    if(sum(mask)>MIN_INLIERS):
-        # given that we have a good estimate
-        # decompose the homography into Rotation and translation
-        # you are not required to know how to do this for this class
-        # but if you are interested please refer to:
-        # https://docs.opencv.org/master/d9/dab/tutorial_homography.html
-        RT = np.matmul(np.linalg.inv(new_intrinsics), homography)
-        norm = np.sqrt(np.linalg.norm(RT[:,0])*np.linalg.norm(RT[:,1]))
-        RT = -1*RT/norm
-        c1 = RT[:,0]
-        c2 = RT[:,1]
-        c3 = np.cross(c1,c2)
-        T = RT[:,2]
-        R = np.vstack((c1,c2,c3)).T
-        W,U,Vt = cv2.SVDecomp(R)
-        R = np.matmul(U,Vt)
-        return True, R, T
-    # return false if we could not comput a good estimate
-    return False, None, None
