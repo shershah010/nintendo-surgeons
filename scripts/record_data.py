@@ -10,6 +10,10 @@ import os
 
 import rospy
 from lab4_pkg.msg import SoftGripperState, SoftGripperCmd
+import datetime
+
+d = datetime.datetime.today()
+test_pwm = 200
 
 class DataRecorder():
     def __init__(self, run_name):
@@ -25,7 +29,7 @@ class DataRecorder():
         rospy.sleep(1)
         rospy.Subscriber('soft_gripper_state', SoftGripperState, self.state_listener)
         rospy.on_shutdown(self.shutdown)
-
+        self.test_pwm = 200
         self.states = []
         self.rate = rospy.Rate(100)
         self.start_time = None
@@ -73,9 +77,11 @@ class DataRecorder():
         Script to command soft finger.  You can send commands to both fingers, but only the right is attached.
         """
         self.cmd_pub.publish(SoftGripperCmd(0,0))
+        rospy.sleep(2)
+        self.cmd_pub.publish(SoftGripperCmd(test_pwm,0))
         rospy.sleep(10)
         self.cmd_pub.publish(SoftGripperCmd(0,0))
-        rospy.sleep(3)
+        rospy.sleep(8)
         self.shutdown()
 
     def shutdown(self):
@@ -87,5 +93,10 @@ class DataRecorder():
 
 if __name__ == '__main__':
     rospy.init_node('data_recorder')
-    dr = DataRecorder('test_flex.csv')
-    dr.record_data()
+    for pwm in range(20, 201, 20):
+        for i in range(1):
+            d = datetime.datetime.today()
+            test_pwm = pwm
+            dr = DataRecorder('test_data_pwm' + str(test_pwm) + '_' + d.strftime('%d-%m-%Y %H:%M:%S') + '.csv')
+            dr.record_data()
+            dr.flush()
