@@ -251,3 +251,35 @@ if __name__ == '__main__':
     rospy.init_node('soft_gripper_interface', anonymous=True)
     sgi = SoftGripperInterface()
     sgi.run()
+
+# This function takes in an intrinsics matrix, and two sets of 2d points
+# if a pose can be computed it returns true along with a rotation and 
+# translation between the sets of points. 
+# returns false if a good pose estimate cannot be found
+def ComputePoseFromHomography(new_intrinsics, referencePoints, imagePoints):
+    # compute homography using RANSAC, this allows us to compute
+    # the homography even when some matches are incorrect
+    homography, mask = cv2.findHomography(referencePoints, imagePoints, 
+                                          cv2.RANSAC, 5.0)
+    # check that enough matches are correct for a reasonable estimate
+    # correct matches are typically called inliers
+    MIN_INLIERS = 30
+    if(sum(mask)>MIN_INLIERS):
+        # given that we have a good estimate
+        # decompose the homography into Rotation and translation
+        # you are not required to know how to do this for this class
+        # but if you are interested please refer to:
+        # https://docs.opencv.org/master/d9/dab/tutorial_homography.html
+        RT = np.matmul(np.linalg.inv(new_intrinsics), homography)
+        norm = np.sqrt(np.linalg.norm(RT[:,0])*np.linalg.norm(RT[:,1]))
+        RT = -1*RT/norm
+        c1 = RT[:,0]
+        c2 = RT[:,1]
+        c3 = np.cross(c1,c2)
+        T = RT[:,2]
+        R = np.vstack((c1,c2,c3)).T
+        W,U,Vt = cv2.SVDecomp(R)
+        R = np.matmul(U,Vt)
+        return True, R, T
+    # return false if we could not comput a good estimate
+    return False, None, None
