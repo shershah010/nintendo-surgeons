@@ -19,7 +19,7 @@ from sensor_msgs.msg import Image
 
 from lab4_pkg.msg import SoftGripperState, SoftGripperCmd
 
-blue_mask = lambda hsv: cv2.inRange(hsv, np.array([110,50,50]), np.array([130,255,255]))
+blue_mask = lambda hsv: cv2.inRange(hsv, np.array([80,100,100]), np.array([130,255,255]))#cv2.inRange(hsv, np.array([110,50,50]), np.array([130,255,255]))
 # This is really stupid.  why would red HSV not be all consecutive.....
 red_mask =  lambda hsv: cv2.inRange(hsv, np.array([0,50,50]), np.array([10,255,255])) | cv2.inRange(hsv, np.array([170,50,50]), np.array([180,255,255]))
 
@@ -49,12 +49,21 @@ class SoftGripperInterface():
         self.ser = serial.Serial(os.path.join('/dev', self.found_device), 9600)
         
         # CV setup
-        self.image_sub = rospy.Subscriber('usb_cam/image_raw', Image, self.update_image)
+        self.image_sub = rospy.Subscriber('camera/color/image_raw', Image, self.update_image)
         self.bridge = CvBridge()
-        params = cv2.SimpleBlobDetector_Params()
-        params.filterByArea = True
-        params.minArea = 150
-        self.detector = cv2.SimpleBlobDetector_create(params)
+        blue_params = cv2.SimpleBlobDetector_Params()
+        blue_params.filterByArea = True
+        blue_params.minArea = 200
+        #blue_params.filterByConvexity = False
+        #blue_params.filterByCircularity = True
+        #blue_params.minCircularity = .6
+        # blue_params.filterByColor = True
+        # blue_params.blobColor = 
+        red_params = cv2.SimpleBlobDetector_Params()
+        red_params.filterByArea = True
+        red_params.minArea = 30
+        self.blue_detector = cv2.SimpleBlobDetector_create(blue_params)
+        self.red_detector = cv2.SimpleBlobDetector_create(red_params)
         self.H = np.eye(3)
         self.im = None
         self.base_pos = np.array([0,0,0])
@@ -105,12 +114,18 @@ class SoftGripperInterface():
         hsv = cv2.cvtColor(self.im, cv2.COLOR_BGR2HSV)
         a = time()
         mask = red_mask(hsv)
-        # plt.imshow(mask, cmap='gray')
-        # plt.show()
-        keypoints = self.detector.detect(255-mask)
+        kernel = np.ones((15, 15),np.uint8)
+        erosion = cv2.erode(mask, kernel, iterations = 1)
+        dilation = cv2.dilate(erosion, kernel, iterations = 1)
+        keypoints = self.red_detector.detect(255-dilation)
         tmp_box = np.array([kp.pt for kp in keypoints])
         if tmp_box.shape != (4,2):
-            # print 'Only see {} board points'.format(tmp_box.shape[0])
+            print('Only see {} board points'.format(tmp_box.shape[0]))
+            # plt.imshow(dilation, cmap='gray')
+            # plt.show()
+            # im_with_keypoints = cv2.drawKeypoints(self.im, keypoints, np.array([]), (0,255,0), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+            # plt.imshow(cv2.cvtColor(im_with_keypoints, cv2.COLOR_BGR2RGB))
+            # plt.show()
             return
         #np.sum gives an array of each x + y and argmin of s gives the smallest value of x + y 
         #argmax of s gives largest value of x + y 
@@ -128,12 +143,8 @@ class SoftGripperInterface():
 
         self.H, _ = cv2.findHomography(PROJECTED_BOX, box)
         #creates a box from the four distinct points --> creates a plane
-        # print 'homog time', time() - a
-        # im_with_keypoints = cv2.drawKeypoints(self.im, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-        # plt.imshow(cv2.cvtColor(im_with_keypoints, cv2.COLOR_BGR2RGB))
-        # plt.show()
-
-        # height, width, _ = self.im.shape
+        #print 'homog time', time() - a
+        height, width, _ = self.im.shape
         # new_image = np.zeros(self.im.shape)
         # for y in range(height):
         #     for x in range(width):
@@ -149,8 +160,7 @@ class SoftGripperInterface():
         # plt.show()
 
     def project_finger(self, finger_pt):
-        """
-        Takes a finger point in image coordinates and maps it to cm
+        """Takes a finger point in image coordinates and maps it to cm
 
         Parameters
         ----------
@@ -164,25 +174,34 @@ class SoftGripperInterface():
         p = self.H.dot(np.append(finger_pt, [1]))
         return p / p[2]
 
-    def compute_finger_pos(self):
+    def compute_finger_pos(self, errors):
         """
         Takes current image and computes the finger position based on the two blue circles.
         Stores them in self.base_pos and self.tip_pos
         """
+
         if self.im is None:
             return np.array([0,0,1]), np.array([0,0,1])
         hsv = cv2.cvtColor(self.im, cv2.COLOR_BGR2HSV)
         mask = blue_mask(hsv)
-
-        # plt.imshow(mask, cmap='gray')
-        # plt.show()
-        keypoints = self.detector.detect(255-mask)
-        # im_with_keypoints = cv2.drawKeypoints(self.im, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-        # plt.imshow(cv2.cvtColor(im_with_keypoints, cv2.COLOR_BGR2RGB))
-        # plt.show()
+        errors[0] += 1
+        kernel = np.ones((10,10),np.uint8)
+        dilation = cv2.dilate(mask, kernel, iterations = 1)
+        keypoints = self.blue_detector.detect(255-dilation)
         finger_pts = np.array([self.project_finger(kp.pt) for kp in keypoints])
+        if finger_pts.shape == (3, 3):
+            finger_pts = np.delete(finger_pts, np.argmax(finger_pts[:, 1]), 0)
         if finger_pts.shape != (2,3):
-            # print 'Only see {} finger points'.format(finger_pts.shape[0])
+            plt.imshow(dilation, cmap='gray')
+            plt.show()
+            im_with_keypoints = cv2.drawKeypoints(self.im, keypoints, np.array([]), (0,255,0), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+            for ky in keypoints:
+                im_with_keypoints = cv2.circle(im_with_keypoints, (int(ky.pt[0]), int(ky.pt[1])), 1, (0, 0, 255), -1)
+            plt.imshow(cv2.cvtColor(im_with_keypoints, cv2.COLOR_BGR2RGB))
+            plt.show()
+            print 'Only see {} finger points'.format(finger_pts.shape[0])
+            errors[1] += 1
+            print(float(errors[1])/errors[0])
             return
         self.base_pos = finger_pts[np.argmin(finger_pts[:,1])]
         self.tip_pos = finger_pts[np.argmax(finger_pts[:,1])]
@@ -193,14 +212,16 @@ class SoftGripperInterface():
         """
         print 'Running....'
         i = 0
+        errors = [0, 0]
         rate = rospy.Rate(100)
         while not rospy.is_shutdown():
             read_serial = self.ser.readline()
             try:
                 if i % 20 == 0:
                     self.update_homography()
-                time, left_pwm, right_pwm, left_pressure, right_pressure, left_flex, right_flex = read_serial.split(',')
-                self.compute_finger_pos()
+                if (len(read_serial.split(',')) == 7):
+                    time, left_pwm, right_pwm, left_pressure, right_pressure, left_flex, right_flex = read_serial.split(',')
+                self.compute_finger_pos(errors)
                 state = SoftGripperState(
                     float(time),
                     float(left_pwm), float(right_pwm),
