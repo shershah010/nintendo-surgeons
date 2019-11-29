@@ -19,7 +19,7 @@
         </div>
       </div>
     </div>
-    <div id="intro" class="extra-content text-block">
+    <div id="intro" class="extra-content text-block newspaper">
       <p>
         The use of soft robot grippers holds many applications for specialized manipulation tasks, including those where objects may be in a variety of shapes or require delicate handling. We aim to utilize vision and bend sensor data to build a platform allowing for testing of various models of a soft robot finger, including that proposed by Daniela Rus. Additionally, we strive to build an effective controller for the soft finger that uses the enhanced sensory data we receive. With these in place, we will work to characterize the dynamics of a grasp using soft fingers and evaluate the performance of existing models to determine the most optimal. This ROS package is designed to test both the soft gripper and the controllers.
       </p>
@@ -27,13 +27,33 @@
   </div>
   <div class="container">
     <div class="main-content">
-      <div class="loadbox subheading" onclick="toggleShow(event)">
+      <div class="loadbox subheading" onclick="toggleShow(event, 'theory')">
         <h1 class="grey">Theory</h1>
+        <div class="loader"></div>
+      </div>
+      <div class="super-side-margins">
+        <a href="https://ieeexplore.ieee.org/abstract/document/8404895"><div class="doc-container">
+          <img src="web_assets/img/doc.svg?sanitize=1" class="doc-img">
+          <p>Dynamic control of soft robots interacting with the environment - Daniela Rus</p>
+        </div></a>
+        <a href="web_assets/lab4.pdf"><div class="doc-container">
+          <img src="web_assets/img/doc.svg?sanitize=1" class="doc-img">
+          <p>EECS 106B Lab 4: Soft Robotics Modeling - Valmik Prabhu and Chris Correa</p>
+        </div></a>
+      </div>
+    </div>
+    <div id='theory' class="extra-content">
+  </div>
+  <div class="container">
+    <div class="main-content">
+      <div class="loadbox subheading" onclick="toggleShow(event)">
+        <h1 class="grey">Data Analysis</h1>
         <div class="loader"></div>
       </div>
     </div>
     <div class="extra-content">
   </div>
+  <footer></footer>
 </body>
 <script src="web_assets/js/showExtraContent.js"></script>
 </html>
