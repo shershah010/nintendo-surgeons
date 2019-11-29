@@ -7,6 +7,7 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="99.156998mm"
@@ -19,6 +20,18 @@
    style="enable-background:new">
   <defs
      id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient872">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0"
+         offset="0"
+         id="stop868" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1"
+         offset="1"
+         id="stop870" />
+    </linearGradient>
     <filter
        style="color-interpolation-filters:sRGB"
        inkscape:label="Drop Shadow"
@@ -226,6 +239,15 @@
          result="composite2"
          id="feComposite1620" />
     </filter>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient872"
+       id="linearGradient874"
+       x1="98.525581"
+       y1="44.794418"
+       x2="98.525581"
+       y2="121.76804"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -382,5 +404,14 @@
        rx="0"
        ry="0"
        clip-path="url(#clipPath1202)" />
+    <rect
+       style="opacity:1;fill:url(#linearGradient874);fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect866"
+       width="99.15699"
+       height="99.156998"
+       x="47.209831"
+       y="26.085548"
+       rx="49.578495"
+       ry="49.578495" />
   </g>
 </svg>
