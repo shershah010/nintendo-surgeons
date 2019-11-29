@@ -3,12 +3,12 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: sans-serif;
+  font-family: 'Inconsolata', monospace;
   font-size: 2em;
 }
 
 p {
-  font-family: sans-serif;
+  font-family: 'Inconsolata', monospace;
 }
 
 a {
@@ -55,6 +55,11 @@ footer {
 .text-block {
   margin: 0px 15vw;
   line-height: 3em;
+}
+
+.text-block p {
+  font-size: 18px;
+  margin: 0px;
 }
 
 .logo-img {
