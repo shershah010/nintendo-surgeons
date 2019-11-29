@@ -8,7 +8,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 p {
-  display: inline-block;
+  font-family: sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: #000;
 }
 
 h1 {
@@ -26,7 +31,7 @@ footer {
 
 .main-content {
   margin: 0px 15vw;
-  height: 67vh;
+  height: 680px;
 }
 
 .main-content:after {
@@ -43,12 +48,13 @@ footer {
 }
 
 .show-extra {
-  height: 33vh;
+  height: 400px;
   border-bottom-width: 1px;
 }
 
 .text-block {
   margin: 0px 15vw;
+  line-height: 3em;
 }
 
 .logo-img {
@@ -126,6 +132,10 @@ footer {
   column-count: 2;
   column-width: 100px;
   column-gap: 40px;
+}
+
+.indent {
+  margin-left: 5px;
 }
 
 .doc-container {
