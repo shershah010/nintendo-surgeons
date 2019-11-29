@@ -3,6 +3,13 @@
 ## Overview
 The use of soft robot grippers holds many applications for specialized manipulation tasks, including those where objects may be in a variety of shapes or require delicate handling. We aim to utilize vision and bend sensor data to build a platform allowing for testing of various models of a soft robot finger, including that proposed by [Daniela Rus](http://www.centropiaggio.unipi.it/sites/default/files/roso18_0123_fi.pdf). Additionally, we strive to build an effective controller for the soft finger that uses the enhanced sensory data we receive. With these in place, we will work to characterize the dynamics of a grasp using soft fingers and evaluate the performance of existing models to determine the most optimal. This ROS package is designed to test both the soft gripper and the controllers.
 
+## Start Up
+1. Open a terminal on the lab computers
+2. Run `roscore`
+3. Go to the `~/ros_workspaces/lab4` and run `source devel/setup.bash`
+4. Then run `rosrun lab4_pkg soft_gripper_interface.py`
+5. Run `rosrun lab4_pkg record_data.py`
+
 ## Folder Descriptions
 
 ### Ardunio/motor
