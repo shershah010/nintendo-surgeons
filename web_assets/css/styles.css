@@ -31,13 +31,16 @@ footer {
 
 .main-content {
   margin: 0px 15vw;
-  height: 680px;
 }
 
 .main-content:after {
   content: "";
   clear: both;
   display: table;
+}
+
+.set-height {
+  height: 680px;
 }
 
 .extra-content {
@@ -55,6 +58,10 @@ footer {
 .text-block {
   margin: 0px 15vw;
   line-height: 3em;
+}
+
+.align-center {
+  text-align: center;
 }
 
 .text-block p {
@@ -95,13 +102,19 @@ footer {
 }
 
 .loadbox {
-  padding: 50px 0px;
+  padding: 25px 0px;
   transition: all linear 0.5s;
+}
+
+.circle {
+  border-radius: 100%;
+  width: 250px;
+  height: 250px;
 }
 
 .loadbox .loader {
   position: relative;
-  top: 50px;
+  top: 25px;
   width: 0%;
   height: 5px;
   transition: all linear 1s;
@@ -122,6 +135,7 @@ footer {
 
 .subheading {
   display: inline-block;
+  margin: 50px 0px;
 }
 
 .newspaper {
@@ -169,4 +183,10 @@ footer {
 
 .team-img {
   width: 250px;
+}
+
+.team-profile {
+  display: inline-block;
+  text-align: center;
+  margin: 25px;
 }
