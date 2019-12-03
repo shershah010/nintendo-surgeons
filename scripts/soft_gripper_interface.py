@@ -129,8 +129,8 @@ class SoftGripperInterface():
             return
         #np.sum gives an array of each x + y and argmin of s gives the smallest value of x + y 
         #argmax of s gives largest value of x + y 
-        #np.diff gives an array of each x - y and argmin of d gives the smallest value of x - y
-        #argmax of d gives the largest value of x - y
+        #np.diff gives an array of each y - x and argmin of d gives the smallest value of y - x
+        #argmax of d gives the largest value of y - x
         s = np.sum(tmp_box, axis=1)
         d = np.diff(tmp_box, axis=1)
         box = np.array([
@@ -141,7 +141,18 @@ class SoftGripperInterface():
         ])
         #creates an array of 4 distinct points
 
-        self.H, _ = cv2.findHomography(PROJECTED_BOX, box)
+        self.H, _ = cv2.findHomography(box, PROJECTED_BOX)
+        
+        # Homography debugging/test code
+
+        # print(cv2.convertPointsToHomogeneous(box.T))
+        # homog_points = cv2.convertPointsToHomogeneous(box).T
+        # homog_points = homog_points[:, 0]
+        # print(homog_points)
+        # projected_homog = self.H.dot(homog_points)
+        # print(projected_homog)
+        # print(cv2.convertPointsFromHomogeneous(projected_homog.T))
+
         #creates a box from the four distinct points --> creates a plane
         #print 'homog time', time() - a
         height, width, _ = self.im.shape
@@ -167,7 +178,8 @@ class SoftGripperInterface():
         finger_pt : 2x1 :obj:`numpy.ndarray`
 
         Returns
-        -------
+        -------pt_array = [kp.pt for kp in keypoints]
+        # print(pt_array)
         3x1 :obj:numpy.ndarray`
             projected point in the square 
         """
@@ -188,7 +200,10 @@ class SoftGripperInterface():
         kernel = np.ones((10,10),np.uint8)
         dilation = cv2.dilate(mask, kernel, iterations = 1)
         keypoints = self.blue_detector.detect(255-dilation)
+        # pt_array = [kp.pt for kp in keypoints]
+        # print(pt_array)
         finger_pts = np.array([self.project_finger(kp.pt) for kp in keypoints])
+        # print(finger_pts)
         if finger_pts.shape == (3, 3):
             finger_pts = np.delete(finger_pts, np.argmax(finger_pts[:, 1]), 0)
         if finger_pts.shape != (2,3):
