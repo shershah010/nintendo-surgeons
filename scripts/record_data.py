@@ -97,6 +97,6 @@ if __name__ == '__main__':
         for i in range(1):
             d = datetime.datetime.today()
             test_pwm = pwm
-            dr = DataRecorder('test_data_pwm' + str(test_pwm) + '_' + d.strftime('%d-%m-%Y %H:%M:%S') + '.csv')
+            dr = DataRecorder('test_data_pwm' + str(test_pwm) + '_' + d.strftime('%d_%m_%Y_%H_%M_%S') + '.csv')
             dr.record_data()
             dr.flush()
