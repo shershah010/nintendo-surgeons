@@ -1,9 +1,6 @@
-#nintendo_surgeons
-"""
-Controller for the soft gripper model, EECS106A
-Authors: Asa Smith, Jay Monga, Sher Shah, Gyanendra Tripathi
-"""
+#!/usr/bin/env python
 import numpy as np
+import matplotlib.pyplot as plt
 import os
 
 import rospy
@@ -12,28 +9,31 @@ import datetime
 
 import sys
 import itertools
-import baxter_interface
-import intera_interface
 
 from moveit_msgs.msg import RobotTrajectory
 
-d = datetime.datetime.today()
-test_pwm = 200
+
 
 class Controller(object):
-    def __init__(self, kKp, Ki, Kd, Kw, limb):
+    def __init__(self, q_d, t_d, Kp, Ki, Kd, Kw, limb):
 
+        self.time_data = []
+        self.angle_data = []
+        self._t_i = None
+        self._q_i = 0
+        self._q_d = q_d
+        self._t_d = t_d
         self._Kp = Kp
         self._Ki = Ki
         self._Kd = Kd
         self._Kw = Kw
 
-        self._LastError = np.zeros(len(Kd))
+        #self._LastError = np.zeros(len(Kd))
+        self._LastError = 0
         self._LastTime = 0;
-        self._IntError = np.zeros(len(Ki))
+        #self._IntError = np.zeros(len(Ki))
         self._ring_buff = [0.0, 0.0, 0.0]
 
-        self._path = RobotTrajectory()
         self._curIndex = 0;
         self._maxIndex = 0;
 
@@ -42,12 +42,16 @@ class Controller(object):
         self.cmd_pub = rospy.Publisher('soft_gripper_cmd', SoftGripperCmd, queue_size=10)
         rospy.sleep(1)
         rospy.Subscriber('soft_gripper_state', SoftGripperState, self.state_listener)
+        self._q_eq = self.q_desired_line()
         rospy.on_shutdown(self.shutdown)
 
-    def q_desired_line(self, t_d, t_i, q_i, q_d):
-        q_vel = (q_d - q_i) / (t_d - t_i)
-        def q_eq(t_d):
-            line_eq = q_vel*t_d + q_i
+    def q_desired_line(self):
+        q_vel = (self._q_d - self._q_i) / (self._t_d)
+        def q_eq(t):
+            if t > self._t_d:
+                line_eq = self._q_d
+            else:
+                line_eq = q_vel*t + self._q_i
             return line_eq
         return q_eq
 
@@ -60,17 +64,24 @@ class Controller(object):
         g = L_i*(np.sin(q) / (2*q))
         return g
     
-    def u_dynamics(self, alpha, gamma, tau_vel, damping, K, t_d, t_i, q_i, q_d):
+    def u_dynamics(self, alpha, gamma, tau_vel, damping, K):
         alph, gam, t_dot, D, k = alpha, gamma, tau_vel, damping, K
-        q_eq = self.q_desired_line(t_d, t_i, q_i, q_d)
+        q_eq = self.q_desired_line()
         def u_eq(t):
             q = q_eq(t)
-            q_vel = (q / t) - q_i
+            q_vel = (q / t) - self._q_i
             c = self.C(q, q_vel)
             g = self.G(q)
             u = (1 / alph)*(c + D)*q_vel + (1 / alph)*g + (1 / alph)*k*q + (2 / alph)*gam*t_dot
             return u
         return u_eq
+
+    def flex2angle(self, flex):
+        a = -1.23119388
+        b = 1.13689189e-3
+        c = 333.63279433581033
+        theta = a*flex + b*flex*flex + c
+        return theta
 
     def state_listener(self, msg):
         """
@@ -79,16 +90,25 @@ class Controller(object):
         ----------
         msg : :obj:`lab4_pkg.SoftGripperState`
         """
-        if self.start_time is None:
-            self.start_time = msg.time
-        self.states.append([
-            msg.time - self.start_time, 
-            msg.left_pwm, msg.right_pwm, 
-            msg.left_pressure, msg.right_pressure, 
-            msg.left_flex, msg.right_flex, 
-            msg.base_pos.x, msg.base_pos.y, 
-            msg.tip_pos.x, msg.tip_pos.y
-        ])
+        if self._t_i is None:
+            self._t_i = msg.time
+            self._q_i = self.flex2angle(msg.left_flex)
+
+        else:
+            self.state = {
+            'time':msg.time - self._t_i, 
+            # msg.left_pwm, msg.right_pwm, 
+            # msg.left_pressure,
+            # msg.right_pressure, 
+            'angle':self.flex2angle(msg.left_flex)
+            # msg.right_flex, 
+            # msg.base_pos.x, msg.base_pos.y, 
+            # msg.tip_pos.x, msg.tip_pos.y
+            }
+            print("Time: " + str(self.state['time']))
+            self.time_data.append(self.state['time'])
+            self.angle_data.append(self.state['angle'])
+            self.step_control()
 
     def shutdown(self):
         """
@@ -97,10 +117,10 @@ class Controller(object):
         rospy.loginfo("Stopping Controller")
 
         # Set velocities to zero
-        self._limb.set_joint_velocities(dict(itertools.izip(self._limb.joint_names(), np.zeros(len(self._limb.joint_names())))))
-        rospy.sleep(0.1)
+        self.cmd_pub.publish(SoftGripperCmd(0,0))
 
-    def step_control(self, t):
+
+    def step_control(self):
         """
         Return the control input given the current controller state at time t
 
@@ -112,55 +132,73 @@ class Controller(object):
         
         """
         # Make sure you're using the latest time
-        while (not rospy.is_shutdown() and self._curIndex < self._maxIndex and self._path.joint_trajectory.points[self._curIndex+1].time_from_start.to_sec() < t+0.001):
-            self._curIndex = self._curIndex+1
+        # while (not rospy.is_shutdown() and self._curIndex < self._maxIndex and self._path.joint_trajectory.points[self._curIndex+1].time_from_start.to_sec() < t+0.001):
+        #     self._curIndex = self._curIndex+1
 
 
-        current_position = np.array([self._limb.joint_angles()[joint_name] for joint_name in self._path.joint_trajectory.joint_names])
-        current_velocity = np.array([self._limb.joint_velocities()[joint_name] for joint_name in self._path.joint_trajectory.joint_names])
+        # current_position = np.array([self._limb.joint_angles()[joint_name] for joint_name in self._path.joint_trajectory.joint_names])
+        # current_velocity = np.array([self._limb.joint_velocities()[joint_name] for joint_name in self._path.joint_trajectory.joint_names])
 
-        if self._curIndex < self._maxIndex:
-            time_low = self._path.joint_trajectory.points[self._curIndex].time_from_start.to_sec()
-            time_high = self._path.joint_trajectory.points[self._curIndex+1].time_from_start.to_sec()
+        # if self._curIndex < self._maxIndex:
+        #     time_low = self._path.joint_trajectory.points[self._curIndex].time_from_start.to_sec()
+        #     time_high = self._path.joint_trajectory.points[self._curIndex+1].time_from_start.to_sec()
 
-            target_position_low = np.array(self._path.joint_trajectory.points[self._curIndex].positions)
-            target_velocity_low = np.array(self._path.joint_trajectory.points[self._curIndex].velocities)
+        #     target_position_low = np.array(self._path.joint_trajectory.points[self._curIndex].positions)
+        #     target_velocity_low = np.array(self._path.joint_trajectory.points[self._curIndex].velocities)
 
-            target_position_high = np.array(self._path.joint_trajectory.points[self._curIndex+1].positions)
-            target_velocity_high = np.array(self._path.joint_trajectory.points[self._curIndex+1].velocities)
+        #     target_position_high = np.array(self._path.joint_trajectory.points[self._curIndex+1].positions)
+        #     target_velocity_high = np.array(self._path.joint_trajectory.points[self._curIndex+1].velocities)
 
-            target_position = target_position_low + (t - time_low)/(time_high - time_low)*(target_position_high - target_position_low)
-            target_velocity = target_velocity_low + (t - time_low)/(time_high - time_low)*(target_velocity_high - target_velocity_low)
+        #     target_position = target_position_low + (t - time_low)/(time_high - time_low)*(target_position_high - target_position_low)
+        #     target_velocity = target_velocity_low + (t - time_low)/(time_high - time_low)*(target_velocity_high - target_velocity_low)
 
-        else:
-            target_position = np.array(self._path.joint_trajectory.points[self._curIndex].positions)
-            target_velocity = np.array(self._path.joint_trajectory.points[self._curIndex].velocities)
+        # else:
+        #     target_position = np.array(self._path.joint_trajectory.points[self._curIndex].positions)
+        #     target_velocity = np.array(self._path.joint_trajectory.points[self._curIndex].velocities)
 
-        # Feed Forward Term
-        u_ff = target_velocity
+        # # Feed Forward Term
+        # u_ff = target_velocity
 
-        # Error Term
-        error = target_position - current_position
+        # # Error Term
+        error = self._q_eq(self.state['time']) - self.state['angle']
 
-        # Integral Term
-        self._IntError = self._Kw * self._IntError + error
+        # # Integral Term
+        # self._IntError = self._Kw * self._IntError + error
         
-        # Derivative Term
-        dt = t - self._LastTime
-        # We implement a moving average filter to smooth the derivative
-        self._ring_buff[2] = self._ring_buff[1]
-        self._ring_buff[1] = self._ring_buff[0]
-        self._ring_buff[0] = (error - self._LastError) / dt
-        ed = np.mean(self._ring_buff)
+        # # Derivative Term
+        dt = self.state['time'] - self._LastTime
+        # # We implement a moving average filter to smooth the derivative
+        # self._ring_buff[2] = self._ring_buff[1]
+        # self._ring_buff[1] = self._ring_buff[0]
+        # self._ring_buff[0] = (error - self._LastError) / dt
+        # ed = np.mean(self._ring_buff)
 
-        # Save terms for the next run
-        self._LastError = error
-        self._LastTime = t
+        # # Save terms for the next run
 
         # Note, you should load the Kp, Ki, Kd, and Kw constants with
         # self._Kp
         # and so on. This is better practice than hard-coding
+        u_ff = 0
 
-        u = u_ff + self._Kp * error + self._Kd * ed + self._Ki * self._IntError
+        u = u_ff + self._Kp * error + self._Kd * (error - self._LastError)/dt # + self._Ki * self._IntError
+        u = u if u >= 0 else 0
+        self.cmd_pub.publish(SoftGripperCmd(u,0))
+        print("Error: " + str(error))
+        self._LastError = error
+        self._LastTime = self.state['time']
 
-        return u
+
+
+if __name__ == '__main__':
+    rospy.init_node('controller')
+    user_angle = input('input the desired angle: ')
+    user_time = input('input the desired time: ')
+    c = Controller(user_angle, user_time, 8, 5, 0 ,0, 'left')
+    while not rospy.is_shutdown():
+        continue
+    c.shutdown()
+    time_array = np.array(c.time_data)
+    angle_array = np.array(c.angle_data)
+    plt.plot(time_array, angle_array)
+    plt.show()
+    c.shutdown()
