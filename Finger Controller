@@ -194,6 +194,7 @@ if __name__ == '__main__':
     user_angle = input('input the desired angle: ')
     user_time = input('input the desired time: ')
     c = Controller(user_angle, user_time, 8, 5, 0 ,0, 'left')
+    rospy.on_shutdown(c.shutdown)
     while not rospy.is_shutdown():
         continue
     c.shutdown()
