@@ -7,7 +7,33 @@
   <link href="web_assets/css/styles.css" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
+  <nav>
+    <ul>
+      <li role="presentation" class="active">
+        <a href="#intro-cont">
+          <span class="nav__counter grey">TOP</span>
+        </a>
+      </li>
+
+      <li role="presentation">
+        <a href="#theory-cont">
+          <span class="nav__counter grey">THEORY</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="#analysis-cont">
+          <span class="nav__counter grey">ANALYSIS</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="#team-cont">
+          <span class="nav__counter grey">TEAM</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container" id='intro-cont'>
     <div class="main-content set-height">
       <div class="pull-left">
         <div class="logo-img center"></div>
@@ -26,7 +52,7 @@
       </p>
     </div>
   </div>
-  <div class="container">
+  <div class="container" id='theory-cont'>
     <div class="main-content">
       <div class="loadbox subheading" onclick="toggleShow(event, 'theory')">
         <h1 class="grey">Theory</h1>
@@ -45,7 +71,7 @@
     </div>
     <div id="theory" class="extra-content"></div>
   </div>
-  <div class="container">
+  <div class="container" id='analysis-cont'>
     <div class="main-content">
       <div class="loadbox subheading" onclick="toggleShow(event,'analysis')">
         <h1 class="grey">Data Analysis</h1>
@@ -58,7 +84,7 @@
     </div>
     <div id="analysis" class="extra-content"></div>
   </div>
-  <div class="container">
+  <div class="container" id="team-cont">
     <div class="main-content">
       <div class="loadbox subheading" onclick="toggleShow(event, 'team')">
         <h1 class="grey">Team</h1>
@@ -96,4 +122,5 @@
   <footer></footer>
 </body>
 <script src="web_assets/js/showExtraContent.js"></script>
+<script src="web_assets/js/smoothScroller.js"></script>
 </html>
