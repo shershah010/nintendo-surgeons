@@ -22,7 +22,7 @@ q0 = 0;
 dq0 = 0;
 % 
 % 
-x = K, D, alpha, gamma;
+% x = K, D, alpha, gamma;
 % 
  cost = @(x) cost_function(x(1), x(2), x(3), x(4), time, u, q_measured, q0, dq0, tau0, dtau0);
 % 
