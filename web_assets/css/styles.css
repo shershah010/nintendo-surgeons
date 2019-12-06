@@ -42,7 +42,7 @@ nav ul {
 
 nav ul li {
   line-height: 40px;
-  transition: 0.5s all linear;
+  transition: 0.3s all linear;
   text-align: right;
 }
 
@@ -70,14 +70,15 @@ nav ul li:hover {
 }
 
 .extra-content {
-  transition: all linear 0.5s;
-  height: 0px;
+  display: block;
+  transition: all linear 1s;
+  max-height: 0px;
   overflow: hidden;
   border-bottom: 0px solid #eee;
 }
 
 .show-extra {
-  height: 400px;
+  max-height: 1000px;
   border-bottom-width: 1px;
 }
 
@@ -164,6 +165,10 @@ nav ul li:hover {
   margin: 50px 0px;
 }
 
+.top-margin {
+  margin-top: 50px;
+}
+
 .newspaper {
   /* Old Chrome, Safari, Opera */
   -webkit-column-count: 2;
@@ -215,4 +220,11 @@ nav ul li:hover {
   display: inline-block;
   text-align: center;
   margin: 25px;
+}
+
+.name {
+  display: inline-block;
+  padding: 20px;
+  height: 100%;
+  width: 250px;
 }
