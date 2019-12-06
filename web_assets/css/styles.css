@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0px;
 }
@@ -22,6 +26,28 @@ h1 {
 
 footer {
   margin-top: 100px;
+}
+
+nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 5%;
+  z-index: 20;
+}
+
+nav ul {
+  list-style: none;
+}
+
+nav ul li {
+  line-height: 40px;
+  transition: 0.5s all linear;
+  text-align: right;
+}
+
+nav ul li:hover {
+  letter-spacing: 2px;
 }
 
 .container {
