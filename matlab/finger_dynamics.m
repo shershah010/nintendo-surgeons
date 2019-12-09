@@ -8,7 +8,7 @@ clc
 syms q dq ddq real
 
 % Parameters
-m = 0.05; % This is made up for now
+m = 0.035;
 g = [9.81; 0; 0]; % The x axis points down
 L = 0.084; % 8.4 cm
 
@@ -61,7 +61,8 @@ dynamics = fs + gs*Tau;
 
 syms C1 C2 real
 
-lambda = q/sin(q);
+lambda = q/sin(q);g = [9.81; 0; 0]; % The x axis points down
+
 sigma = ((lambda^4 - 1)/ lambda^3)*(2*C1 + 4*C2*(lambda - 1/lambda)^2);
 K2 = sigma/lambda;
 
@@ -70,6 +71,7 @@ dynamics2 = fs2 + gs*Tau;
 
 
 %% Generate functions
+g = [9.81; 0; 0]; % The x axis points down
 
 if ~exist('./gen')
     mkdir('./gen')
