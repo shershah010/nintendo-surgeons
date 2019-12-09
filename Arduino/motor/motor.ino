@@ -26,8 +26,8 @@ void loop() {
     left = Serial.parseInt();
     right = Serial.parseInt();
     //Serial.println(String(left)+","+String(right));
-    left = min(left, 200);
-    right = min(right, 200);
+    left = constrain(left, 0, 200);
+    right = constrain(right, 0, 200);
     analogWrite(LEFT_FINGER_PIN, left);
     analogWrite(RIGHT_FINGER_PIN, right);
   }
