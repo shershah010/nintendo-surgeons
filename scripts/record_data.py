@@ -17,6 +17,7 @@ test_pwm = 0
 trial_name = raw_input("Input trial name: ")
 test_vals = input("Input PWM vals (list of vals): ")
 pwm_trials = input("Input trials per PWM (one int): ")
+on_time = input("Input step duration (one int): ")
 
 class DataRecorder():
     def __init__(self, run_name):
@@ -82,9 +83,9 @@ class DataRecorder():
         self.cmd_pub.publish(SoftGripperCmd(0,0))
         rospy.sleep(2)
         self.cmd_pub.publish(SoftGripperCmd(test_pwm,0))
-        rospy.sleep(20)
+        rospy.sleep(on_time)
         self.cmd_pub.publish(SoftGripperCmd(0,0))
-        rospy.sleep(20)
+        rospy.sleep(on_time)
         self.flush()
 
     def shutdown(self):
