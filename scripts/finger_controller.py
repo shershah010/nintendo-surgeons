@@ -85,7 +85,7 @@ class Controller(object):
 
     def u_ff_eq(self, t):
         #u_ff*f(t) = F(t)= ma(t)
-        m = 0.052
+        m = 0.035
         sin_func = -0.025*self._q_d*np.sin((2*np.pi / (4 * self._t_d)) *(t - self._t_d))
         uff_func = m*sin_func
         return uff_func

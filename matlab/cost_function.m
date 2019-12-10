@@ -19,6 +19,8 @@ tau = find_tau(u, t, alpha, gamma, tau0, dtau0);
 qhat = find_q(tau, t, K, D, q0, dq0);
 
 error = qhat - q;
+% disp('% error =', 100 * error./q)
+% disp('round iterated')
 
 end
 
