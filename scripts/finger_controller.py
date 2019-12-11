@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import matlab.engine
+eng = matlab.engine.start_matlab()
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -61,34 +63,11 @@ class Controller(object):
         sin = self._q_d + self._q_i + self._q_d*np.sin((2*np.pi / (4 * self._t_d))*(t - self._t_d))
         return sin
 
-
-    def C(self, q, q_vel):
-        #coreolis func
-        return 1
-
-    def G(self, q):
-        L_i = 80
-        g = L_i*(np.sin(q) / (2*q))
-        return g
-    
-    def u_dynamics(self, alpha, gamma, tau_vel, damping, K):
-        alph, gam, t_dot, D, k = alpha, gamma, tau_vel, damping, K
-        q_eq = self.q_desired_line()
-        def u_eq(t):
-            q = q_eq(t)
-            q_vel = (q / t) - self._q_i
-            c = self.C(q, q_vel)
-            g = self.G(q)
-            u = (1 / alph)*(c + D)*q_vel + (1 / alph)*g + (1 / alph)*k*q + (2 / alph)*gam*t_dot
-            return u
-        return u_eq
-
-    def u_ff_eq(self, t):
-        #u_ff*f(t) = F(t)= ma(t)
-        m = 0.035
-        sin_func = -0.025*self._q_d*np.sin((2*np.pi / (4 * self._t_d)) *(t - self._t_d))
-        uff_func = m*sin_func
-        return uff_func
+    # def u_ff_eq(self, t):
+    #     m = 0.035
+    #     sin_func = -0.025*self._q_d*np.sin((2*np.pi / (4 * self._t_d)) *(t - self._t_d))
+    #     uff_func = m*sin_func
+    #     return uff_func
 
     def flex2angle(self, flex):
         # a = -1.05591989
@@ -97,7 +76,7 @@ class Controller(object):
         a = -.986365423
         b = .00088301426
         c = 274.448006079
-        theta = a*flex + b*flex*flex + c #+ d
+        theta = a*flex + b*flex*flex + c 
         return theta
 
     def state_listener(self, msg):
@@ -115,15 +94,9 @@ class Controller(object):
             self._a_ring_buff[1:] = self._a_ring_buff[:(len(self._a_ring_buff) - 1)]
             self._a_ring_buff[0] = self.flex2angle(msg.left_flex)
             self.state = {
-            'time':msg.time - self._t_i, 
-            # msg.left_pwm, msg.right_pwm, 
-            # msg.left_pressure,
-            # msg.right_pressure, 
+            'time':msg.time - self._t_i,  
             # 'angle':self.flex2angle(msg.left_flex)
             'angle':np.mean(self._a_ring_buff)
-            # msg.right_flex, 
-            # msg.base_pos.x, msg.base_pos.y, 
-            # msg.tip_pos.x, msg.tip_pos.y
             }
             print("Time: " + str(self.state['time']))
             self.time_data.append(self.state['time'])
@@ -136,26 +109,23 @@ class Controller(object):
         """
         rospy.loginfo("Stopping Controller")
 
-        # Set velocities to zero
+        # Set pwm to zero
+        self.cmd_pub.publish(SoftGripperCmd(0,0))
+        self.cmd_pub.publish(SoftGripperCmd(0,0))
+        self.cmd_pub.publish(SoftGripperCmd(0,0))
         self.cmd_pub.publish(SoftGripperCmd(0,0))
         self.cmd_pub.publish(SoftGripperCmd(0,0))
         self.cmd_pub.publish(SoftGripperCmd(0,0))
         self.cmd_pub.publish(SoftGripperCmd(0,0))
         self.cmd_pub.publish(SoftGripperCmd(0,0))
 
-        self.cmd_pub.publish(SoftGripperCmd(0,0))
-        self.cmd_pub.publish(SoftGripperCmd(0,0))
-        self.cmd_pub.publish(SoftGripperCmd(0,0))
-
-
+    u_model = eng.edit('u_model function in matlab', nargout=0)
 
     def step_control(self):
         """
         Return the control input given the current controller state at time t
-
         Inputs:
         t: time from start in seconds
-
         Output:
         u: 7x' ndarray of velocity commands
         
@@ -163,7 +133,7 @@ class Controller(object):
 
 
         # # Feed Forward Term
-        # u_ff = target_velocity
+        # u_ff = u_model
 
         # # Error Term
         #error = self._q_eq(self.state['time']) - self.state['angle']
@@ -185,7 +155,11 @@ class Controller(object):
         # Note, you should load the Kp, Ki, Kd, and Kw constants with
         # self._Kp
         # and so on. This is better practice than hard-coding
-        u_ff = 3.5 * self.sin_eq(self.state['time'])#self.u_ff_eq(self.state['time'])
+        #u_ff = 3.5 * self.sin_eq(self.state['time'])#self.u_ff_eq(self.state['time'])
+        time_array = np.linspace(0, user_time, 10*user_time)
+        sin_array = self.sin_eq(time_array)
+
+        u_ff = self.u_model(self.state['time']), sin_array)
         u = u_ff + self._Kp * error + self._Kd * ed + self._Ki * self._IntError
         u = u if u >= 40 else 40
         self.u_data.append(u)
@@ -209,6 +183,7 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         continue
     c.shutdown()
+    #exit the plot to restart the controller
     time_array = np.array(c.time_data)
     angle_array = np.array(c.angle_data)
     plt.plot(time_array, angle_array, label='actual')
