@@ -12,9 +12,9 @@ for i = 1:len
     file_name = strcat(data_dir, files(i).name);
     % Thanks Tom https://www.mathworks.com/matlabcentral/answers/43244-selecting-only-the-numbers-from-a-string-variable
     id = regexp(file_name,'\d*','Match');
-    pwm = str2double(id(1))/20;
+    pwm = (str2double(id(1)) / 10) + 1;
     trial = str2double(id(2)) + 1;
     % Read in first ~1700 lines from CSV file
-    data_cur = importdata(strcat(data_dir, files(i).name), 2, 1700);
+    data_cur = importdata(strcat(data_dir, files(i).name), 2, 4800);
     all_data{pwm, trial} = data_cur;
 end
