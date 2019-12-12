@@ -14,8 +14,6 @@ import itertools
 
 from moveit_msgs.msg import RobotTrajectory
 
-
-
 class Controller(object):
     def __init__(self, q_d, t_d, Kp, Ki, Kd, Kw, limb):
 
@@ -159,7 +157,7 @@ class Controller(object):
         time_array = np.linspace(0, user_time, 10*user_time)
         sin_array = self.sin_eq(time_array)
 
-        u_ff = self.u_model(self.state['time']), sin_array)
+        u_ff = self.u_model(sin_array)
         u = u_ff + self._Kp * error + self._Kd * ed + self._Ki * self._IntError
         u = u if u >= 40 else 40
         self.u_data.append(u)
@@ -178,6 +176,7 @@ if __name__ == '__main__':
     user_time = input('input the desired time: ')
     # c = Controller(user_angle, user_time, 1, .1, 20, .75, 'left')
     # c = Controller(user_angle, user_time, 0.5, 0.5, 25, .75, 'left')
+    # c = Controller(user_angle, user_time, 2, 10, .6, .9, 'left') <-- using the sin_eq as the u_ff
     c = Controller(user_angle, user_time, 2, 10, .6, .9, 'left')
     rospy.on_shutdown(c.shutdown)
     while not rospy.is_shutdown():
