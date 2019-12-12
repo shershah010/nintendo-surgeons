@@ -17,11 +17,11 @@ ss_flex = zeros(ss_size, 1);
 ss_angle = zeros(ss_size, 1);
 ss_input = zeros(ss_size, 1);
 
-
-all_time = zeros();
-all_angle = zeros();
-all_flex = zeros();
-all_input = zeros();
+last_time = 0
+all_time = [];
+all_angle = [];
+all_flex = [];
+all_input = [];
 
 %Compile training
 
@@ -42,6 +42,7 @@ end
 for r = 1:rows
     for c = 1:training_trials
         data_cur = dataset{r, c};
+        
         pump_active  = data_cur.left_pwm > 0;
         filter_active = data_cur(pump_active, :);
         data_dim = size(filter_active);
@@ -71,9 +72,9 @@ for r = 1:rows
         all_angle = [all_angle; calc_angle(data_cur)];
         all_flex = [all_flex; data_cur.left_flex];
         all_input = [all_input; data_cur.left_pwm];
-        last_i = size(all_time);
-        last_time = all_time(last_i(1));
         all_time = [all_time; last_time + data_cur.time];
+        last_i = size(all_time);
+        last_time = all_time(last_i(1)) + .03;
     end
 end
 
