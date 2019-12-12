@@ -97,12 +97,11 @@ nav ul li:hover {
 }
 
 .logo-img {
-  background-image: url("../img/A.jpg");
-  background-size: cover;
+  background-image: url("../img/figure.svg");
+  background-size: contain;
   background-position: center;
   width: 50vh;
   height: 50vh;
-  border-radius: 100%;
 }
 
 .pull-left {
