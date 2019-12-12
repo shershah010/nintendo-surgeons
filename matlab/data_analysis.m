@@ -10,27 +10,26 @@ clc
 
 %% Package paths
 
-cur = pwd;
-addpath( genpath( [cur, '/gen/' ] ));
+% cur = pwd;
+% addpath( genpath( [cur, '/gen/' ] ));
 
-alpha = .1;
-gamma = 0.5;
-tau0 = 0;
-dtau0 = 0;
-
-K = 3;
-D = 0.4;
-q0 = 0;
-dq0 = 0;
+% alpha = .1;
+% gamma = 0.5;
+% tau0 = 0;
+% dtau0 = 0;
+% 
+% K = 3;
+% D = 0.4;
+% q0 = 0;
+% dq0 = 0;
 % 
 % 
 % x = K, D, alpha, gamma;
-% 
-cost = @(x) cost_function(x(1), x(2), x(3), x(4), time, input, q_measured, q0, dq0, tau0, dtau0);
+% % cost = @(x) cost_function(x(1), x(2), x(3), x(4), time, input, q_measured, q0, dq0, tau0, dtau0);
 % % 
 % % yuyu
 % %[X, resnorm] = lsqnonlin(cost, [2.6, 0.5, 0.31, 0.6])
-[X, resnorm] = lsqnonlin(cost, [K, D, alpha, gamma]);
+% [X, resnorm] = lsqnonlin(cost, [K, D, alpha, gamma]);
 
 
 %% 
@@ -41,7 +40,6 @@ cost = @(x) cost_function(x(1), x(2), x(3), x(4), time, input, q_measured, q0, d
 
 %% Load CSV
 % [comp(1:5, :); comp(6:10, :); comp(11:15, :); comp(16:20, :); comp(21: 25, :)]
->>>>>>> 371e8e03f3097122c2303a814f2268ae3977ad0b
 %q = a * flex^2 + b*flex + c
 %a = .0004757;
 %b = -.629484;
@@ -52,26 +50,28 @@ cost = @(x) cost_function(x(1), x(2), x(3), x(4), time, input, q_measured, q0, d
 %b_1 = 6.71203
 %b_2 = 53243.43
 %b_3 = 7237.643
-a = -.986365423;
-b = .00088301426;
-c = 274.448006079;
-f
-pwmFile = readtable('..\data\longer\longer_ss080_2.csv');
-flex = table2array(pwmFile(:, 'left_flex'));
-y_dif = table2array(pwmFile(:, 'tip_pos_y')) - table2array(pwmFile(:, 'base_pos_y'));
-x_dif = table2array(pwmFile(:, 'tip_pos_x')) - table2array(pwmFile(:, 'base_pos_x'));
-<<<<<<< HEAD
+% a = -.986365423;
+% b = .00088301426;
+% c = 274.448006079;
 
-
-%% Generate q(t)
+% flex = table2array(pwmFile(:, 'flex'));
+% y_dif = table2array(pwmFile(:, 'tip_pos_y')) - table2array(pwmFile(:, 'base_pos_y'));
+% x_dif = table2array(pwmFile(:, 'tip_pos_x')) - table2array(pwmFile(:, 'base_pos_x'));
+%% Load Training Data/Generate q(t)
 
 %q = b_0 + b_1 * flex + b_2 * exp(-flex * 1/b_3)
-q = a * flex + b * flex.*flex + c;
-q_measured = asin(x_dif ./ sqrt(x_dif.^2 + y_dif.^2)) * 180/pi;
-q = pi * q/90;
-q_measured = pi* q_measured/90;
-u = table2array(pwmFile(:, 'left_pwm'));
-time = table2array(pwmFile(:, 'time'));
+% q = a * flex + b * flex.*flex + c;
+% q_measured = asin(x_dif ./ sqrt(x_dif.^2 + y_dif.^2)) * 180/pi;
+% q = pi * q/90;
+load cleaned_training_data.mat;
+pwmFile = cleaned_training(12453:25340,:);
+% pwmFile = readtable('..\data\longer\longer_ss080_9.csv')
+% y_dif = table2array(pwmFile(:, 'tip_pos_y')) - table2array(pwmFile(:, 'base_pos_y'));
+% x_dif = table2array(pwmFile(:, 'tip_pos_x')) - table2array(pwmFile(:, 'base_pos_x'));
+% q_measured = asin(x_dif ./ sqrt(x_dif.^2 + y_dif.^2)) * 2;
+q_measured = pi* table2array(pwmFile(:,'angle'))/90;
+u = table2array(pwmFile(:, 'input'));
+t = table2array(pwmFile(:, 'time'));
 %% Package paths
 
 cur = pwd;
@@ -81,19 +81,18 @@ addpath( genpath( [cur, '/gen/' ] ));
 % Note the values used are totally made up and shouldn't be used as
 % starting points for your actual analysis
 
-alpha = 0.0680;
-gamma = 0.2518;
+alpha = 0.0549;
+gamma = 0.1;
 % for pwm in pwms_clean:
 tau0 = 0;
 dtau0 = 0;
-=======
-time = table2array(pwmFile(:, 'time'));
-input = table2array(pwmFile(:, 'left_pwm'));
+% time = table2array(pwmFile(:, 'time'));
+% input = table2array(pwmFile(:, 'left_pwm'));
 
 %% Generate q(t)
 
-q = b_0 + b_1 * flex + b_2 * exp(-flex * 1/b_3)
-q_measured = 2 * asin(x_dif ./ sqrt(x_dif.^2 + y_dif.^2)) * 180/pi
+% q = b_0 + b_1 * flex + b_2 * exp(-flex * 1/b_3)
+% q_measured = 2 * asin(x_dif ./ sqrt(x_dif.^2 + y_dif.^2)) * 180/pi
 
 %alternate regression
 %% do your regression
@@ -127,27 +126,28 @@ q_measured = 2 * asin(x_dif ./ sqrt(x_dif.^2 + y_dif.^2)) * 180/pi
 %     x = lsq_A \ lsq_B
 %     H(i, :) = transpose(x)
 % end
->>>>>>> 371e8e03f3097122c2303a814f2268ae3977ad0b
 
-K = 8.7143;
-D = 0.0378;
-q0 = 0;
+K = 0.6;    
+D =0.08;                      
+
+q0 = -0.9*pi/90;
 dq0 = 0;
 % 
 % 
-x = [K D alpha gamma];
-ub = zeros(4);
-lb = zeros(4);
+x = [K, D, alpha, gamma];
+ub = [15,1,1,1];
+lb = [1e-5,1e-5,1e-5,1e-5];
 % 
- cost = @(x) cost_function(x(1),x(2),x(3),x(4), time, u, q_measured, q0, dq0, tau0, dtau0);
+cost = @(x) cost_function(x(1),x(2),x(3),x(4), t, u, q_measured, q0, dq0, tau0, dtau0);
 % 
 % ,
 %[X, resnorm] = lsqnonlin(cost, [2.6, 0.5, 0.31, 0.6])
 disp('wait..............starting non linear least square fit.......Have faith')
-options = optimoptions(@fminunc,'Display','iter','Algorithm','quasi-newton');
-[X, resnorm] = lsqnonlin(cost, x,0.0,Inf,options)
-pwm = max(table2array(pwmFile(:,'left_pwm')));
-dlmwrite('../data/longer/nlin.csv',[X,pwm],'-append');
+% 'levenberg-marquardt'
+options = optimoptions(@lsqnonlin,'Algorithm','trust-region-reflective','OptimalityTolerance',1e-7,'Display','iter' );
+[X, resnorm] = lsqnonlin(cost, x,lb,ub,options)
+% pwm = max(table2array(pwmFile(:,'input')));
+% dlmwrite('../data/longer/nlin.csv',[X,pwm],'-append');
 % 
 
 % clear all
