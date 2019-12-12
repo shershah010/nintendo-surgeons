@@ -9,7 +9,7 @@ alpha = 0.097663;
 gamma = 0.44373;
 
 t_desired  = traj_desired(1);
-q_desired = traj_desired(2);
+q_desired = traj_desired(2) * pi/9;
 
 q_diff = [0, diff(q_desired)];
 t_diff = [0, diff(t_desired)];
