@@ -4,13 +4,17 @@ function clean = der_filt(dataset, ker_size_filt, ker_size_der, der_window)
 %numerical approximation of the derivative
 flex = dataset.flex;
 time = dataset.time;
+%h_filt: Smoothing of og
 h_filt = ones(ker_size_filt, 1)/ker_size_filt;
+%h_filt_der: Differentiation of smoothed filt data
 h_filt_der = ones(ker_size_der, 1)/ker_size_der;
 f_filt = conv(flex, h_filt, 'same');
+
 % b_filt = (1/ker_size_filt)*ones(1,ker_size_filt);
 % b_der = (1/ker_size_der)*ones(1,ker_size_der);
 % a = 1;
 % f_filt = filter(b_filt, a, flex);
+
 i_keep = ker_size_filt+1:size(flex) - ker_size_filt;
 f_filt = f_filt(i_keep);
 h_der = [1, zeros(1, der_window - 1), -1];
