@@ -78,11 +78,37 @@
         <div class="loader"></div>
       </div>
       <div>
-        <img src="web_assets/img/pwm_pressure_200.png">
-        <img src="web_assets/img/true_est_theta.png">
+        <figure style="text-align: center; display: none">
+          <iframe width="954" height="364.5" src="https://www.youtube.com/embed/2AkEXKylT3k"></iframe>
+        </figure>
+        <figure style="text-align: center; width: 100%">
+          <iframe width="954" height="364.5" src="https://www.youtube.com/embed/2AkEXKylT3k?loop=1&control=0&autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <figcaption>Actual Theta (degrees), Theta with Removed Transiets, and Predicted Theta Trained on Steady State Flex Values Over Time (seconds)<br>Using many different methods we were able to remove most trasient data</figcaption>
+        </figure>
       </div>
     </div>
-    <div id="analysis" class="extra-content"></div>
+    <div id="analysis" class="extra-content">
+      <div class="fig-container super-side-margins">
+        <h3 class="fig-subheading grey">Angle Simulated vs Actual Over Time</h3>
+        <figure>
+          <img src="web_assets/data/simulation1.jpg">
+          <figcaption>Angle Simulated vs Actual Over Time (K = 0.61931, D = 0.0030625, n = 0.0065613, &gamma; = 0.43636)</figcaption>
+        </figure>
+        <figure>
+          <img src="web_assets/data/simulation2.jpg">
+          <figcaption>Angle Simulated vs Actual Over Time (K = 0.61931, D = 0.0030625, n = 0.0065613, &gamma; = 0.43636)</figcaption>
+        </figure>
+        <figure>
+          <img src="web_assets/data/simulation3.jpg">
+          <figcaption>Angle Simulated vs Actual Over Time (K = 0.61931, D = 0.0030625, n = 0.0065613, &gamma; = 0.43636)</figcaption>
+        </figure>
+        <figure>
+          <img src="web_assets/data/simulation4.jpg">
+          <figcaption>Angle Simulated vs Actual Over Time (K = 0.61931, D = 0.0030625, n = 0.0065613, &gamma; = 0.43636)</figcaption>
+        </figure>
+        <h3 class="fig-subheading grey">Angle and PWM Over Time Lead By Controller</h3>
+      </div>
+    </div>
   </div>
   <div class="container" id="team-cont">
     <div class="main-content">

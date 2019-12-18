@@ -11,7 +11,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 2em;
 }
 
-p, li, a {
+p, li, a, figcaption {
   font-family: 'Inconsolata', monospace;
 }
 
@@ -26,6 +26,14 @@ h1 {
 
 footer {
   margin-top: 100px;
+}
+
+figure {
+  width: 600px;
+}
+
+figure img {
+  width: 600px;
 }
 
 nav {
@@ -55,6 +63,19 @@ nav ul li:hover {
   position: relative;
 }
 
+.fig-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+}
+
+.fig-subheading {
+  display: block;
+  margin-top: 50px;
+  width: 100%;
+}
+
 .main-content {
   margin: 0px 15vw;
 }
@@ -71,14 +92,14 @@ nav ul li:hover {
 
 .extra-content {
   display: block;
-  transition: all linear 1s;
+  /* transition: all linear 1s; */
   max-height: 0px;
   overflow: hidden;
   border-bottom: 0px solid #eee;
 }
 
 .show-extra {
-  max-height: 1000px;
+  max-height: 5000px;
   border-bottom-width: 1px;
 }
 
