@@ -117,6 +117,27 @@ nav ul li:hover {
   margin: 0px;
 }
 
+.hidden {
+  display: none !important;
+}
+
+.modal {
+  display: block;
+  position: fixed;
+  padding: 100px 10%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #fff;
+  z-index: 40;
+  text-align: center;
+}
+
+.no-pointer {
+  cursor: default !important;
+}
+
 .logo-img {
   background-image: url("../img/figure.svg");
   background-size: contain;
@@ -239,7 +260,12 @@ nav ul li:hover {
 .team-profile {
   display: inline-block;
   text-align: center;
-  margin: 25px;
+  padding: 25px;
+  cursor: pointer;
+}
+
+.team-profile:hover {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
 .name {
@@ -247,4 +273,9 @@ nav ul li:hover {
   padding: 20px;
   height: 100%;
   width: 250px;
+}
+
+#team:hover {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  cursor: pointer;
 }
