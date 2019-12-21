@@ -84,16 +84,18 @@
   <!-- TODO -->
   <div class="container" id='implementation-cont'>
     <div class="main-content">
-      <div class="loadbox subheading no-pointer">
+      <div class="loadbox subheading" onclick="toggleShow(event, 'implementation')">
         <h1 class="grey">Implementation</h1>
+        <div class="loader"></div>
       </div>
       <div>
-        <div class="text-block newspaper" style="margin: 0">
-          <p>
-            The use of soft robot grippers holds many applications for specialized manipulation tasks, including those where objects may be in a variety of shapes or require delicate handling. Additionally, soft grippers can be used in prosthesis. We utilized vision and bend sensor data to build a platform allowing for testing of various models of a soft robot finger, including that proposed by Daniela Rus. Additionally, we built an effective controller for the soft finger that uses the enhanced sensory data we receive. The end goal of this project was to develop a soft gripper model and some visualization of accuracy. This project introduces an interesting challenge because of all the different components that had to be put together. Using vision algorithms, data analysis, and controller design all came together to complete this project. Correctly collect camera data, remove transient data, and fine tune a PID controller using nonlinear least squares were some of the challenges we faced.
-          </p>
-        </div>
+        <img src="web_assets/img/hardware1.png">
       </div>
+    </div>
+    <div id="implementation" class="extra-content text-block newspaper">
+      <p>
+        Our projected was centered around the soft gripper named Dragonskin. Equipped with an Ardunio, bend sensor, flex sensor, and motor to provide pressure to the finger, we had all the hardware necessary to complete this project. Thankfully we did not need to build any special hardware for this project, but we did have hardware issues. One issue we faced was that the airtube that provided pressure was not properly connected so we had to tinker with that. Another hardware issue was setting up the Intel Realsense camera so that it sent its video feed to the lab computer.
+      </p>
     </div>
   </div>
 
@@ -106,16 +108,16 @@
       </div>
       <div>
         <figure style="text-align: center; display: none">
-          <iframe width="954" height="364.5" src="https://www.youtube.com/embed/2AkEXKylT3k"></iframe>
+          <iframe width="960" height="600" src="https://www.youtube.com/embed/2AkEXKylT3k?loop=1&control=0&autoplay=1"></iframe>
         </figure>
         <figure style="text-align: center; width: 100%">
-          <iframe width="954" height="364.5" src="https://www.youtube.com/embed/2AkEXKylT3k?loop=1&control=0&autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <iframe width="960" height="480" src="https://www.youtube.com/embed/2AkEXKylT3k?loop=1&control=0&autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           <figcaption>Actual Theta (degrees), Theta with Removed Transients, and Predicted Theta Trained on Steady State Flex Values Over Time (seconds)<br>Using many different methods we were able to remove most transient data</figcaption>
         </figure>
       </div>
     </div>
     <div id="results" class="extra-content">
-      <div class="fig-container super-side-margins">
+      <div class="fig-container">
         <h3 class="fig-subheading grey">Angle Simulated vs Actual Over Time</h3>
         <figure>
           <img src="web_assets/data/simulation1.jpg">
@@ -168,7 +170,6 @@
     </div>
   </div>
 
-  <!-- TODO -->
   <div class="container" id="team-cont">
     <div class="main-content">
       <div class="loadbox subheading" onclick="toggleShow(event, 'team')">
@@ -212,22 +213,22 @@
     <div id='gyanendra' class="hidden modal" onclick="teamShow('gyanendra')">
       <img src="web_assets/img/gyanendra_tripathi.png" class="team-img circle">
       <h1>Gyanendra Tripathi</h1>
-      <p>Gyanendra</p>
+      <p>Gyanendra is a masters student coming to UC Berkeley after experiencing public policy for over two decades. Hsi background in electrical engineering made him exceptionally well-suited to design the model based controller, nonlinear regression and system modelling.</p>
     </div>
     <div id='jay' class="hidden modal" onclick="teamShow('jay')">
       <img src="web_assets/img/jay_monga.png" class="team-img circle">
       <h1>Jay Monga</h1>
-      <p>Jay developed and fixed issues with the vision algorithm. He helped develop the controller for the soft gripper. Additionally he </p>
+      <p>Jay is a computer science major with an intermediate background in signals and controls, as well as experience in Python and Matlab. Jay’s main contribution was the implementation and correction of the vision algorithm, and he heavily contributed to the data analysis and implementation of the dynamics model in the controller (generation and interpolation of via points for planning).</p>
     </div>
     <div id='asa' class="hidden modal" onclick="teamShow('asa')">
       <img src="web_assets/img/Asa_Smith.png" class="team-img circle">
       <h1>Asa Smith</h1>
-      <p>Asa developed the controller, both linear and sinusoidal. He also developed most of the presentation slides.</p>
+      <p>Asa is a bioengineering student that has experience in R.O.S, python, and PID control which all greatly helped in the development of a controller for the soft gripper. Asa developed a PID controller with a sinusoidal trajectory that moves to the finger to a desired angle in an inputted amount of time and created most of the presentation for showcasing the research progress.</p>
     </div>
     <div id='sher' class="hidden modal" onclick="teamShow('sher')">
       <img src="web_assets/img/sher_shah.jpeg" class="team-img circle">
       <h1>Sher Shah</h1>
-      <p>Sher worked primarily on developing algorithms to remove transient data from the data collection algorithms. Additionally, he developed this website.</p>
+      <p>Sher studies computer science and enjoyes developing and designing for the web. He worked primarily on developing algorithms to remove transient data from the data collection algorithms in Python. Additionally, he developed this website written in HTML, CSS, and JavaScript.</p>
     </div>
     <div id='valmik' class="hidden modal" onclick="teamShow('valmik')">
       <img src="web_assets/img/valmik_prabhu.png" class="team-img circle">
@@ -243,8 +244,9 @@
 
   <div class="container" id='res-cont'>
     <div class="main-content">
-      <div class="loadbox subheading no-pointer">
+      <div class="loadbox subheading" onclick="toggleShow(event,'resc')">
         <h1 class="grey">Addition Resources</h1>
+        <div class="loader"></div>
       </div>
       <div class="super-side-margins">
         <a href="https://ieeexplore.ieee.org/abstract/document/8404895"><div class="doc-container">
@@ -255,10 +257,18 @@
           <img src="web_assets/img/doc.svg?sanitize=1" class="doc-img">
           <p class="indent">EECS 106B Lab 4: Soft Robotics Modeling - Valmik Prabhu and Chris Correa</p>
         </div></a>
-        <a href="https://github.com/shershah010/nintendo-surgeons"><div class="doc-container">
-          <img src="web_assets/img/doc.svg?sanitize=1" class="doc-img">
-          <p class="indent">Github Repository - Nintendo Surgeons</p>
-        </div></a>
+      </div>
+      <div id="resc" class="extra-content">
+        <div class="super-side-margins">
+          <a href="https://github.com/shershah010/nintendo-surgeons"><div class="doc-container">
+            <img src="web_assets/img/doc.svg?sanitize=1" class="doc-img">
+            <p class="indent">Github Repository - Nintendo Surgeons</p>
+          </div></a>
+          <a href="https://docs.google.com/presentation/d/19dU7U0KsX6XoV8NLRCSmQbxWgv9EKf7TtxObaUtGj8E/present?token=AC4w5VhtYnHO8xBXvtnzkYEwaEkWxFQCFQ%3A1576897466724&includes_info_params=1&eisi=COST6OrgxeYCFRnOxQodPKMGlw#slide=id.g6c40137c01_0_307"><div class="doc-container">
+            <img src="web_assets/img/doc.svg?sanitize=1" class="doc-img">
+            <p class="indent">Project Presentation - Nintendo Surgeons</p>
+          </div></a>
+        </div>
       </div>
     </div>
   </div>

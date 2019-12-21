@@ -29,18 +29,18 @@ footer {
 }
 
 figure {
-  width: 600px;
+  width: 40%;
 }
 
 figure img {
-  width: 600px;
+  width: 100%;
 }
 
 nav {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  right: 5%;
+  right: 3%;
   z-index: 20;
 }
 
@@ -191,6 +191,18 @@ nav ul li:hover {
 
 .loadbox:hover {
   cursor: pointer;
+}
+
+.loadbox:not(.no-pointer):hover h1 {
+  color: #1357be;
+}
+
+.loadbox:not(.no-pointer):hover h3 {
+  color: #1357be;
+}
+
+.loadbox:not(.no-pointer):hover .loader {
+  background-color: #1357be;
 }
 
 .loadbox:hover .loader {
