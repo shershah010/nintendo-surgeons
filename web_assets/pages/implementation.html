@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Nintendo Surgeons</title>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css?family=Inconsolata&display=swap" rel="stylesheet">
+  <link href="../css/styles.css" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <ul>
+      <li role="presentation" class="active">
+        <a href="../../index.html">
+          <span class="nav__counter grey">INTRODUCTION</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="design.html">
+          <span class="nav__counter grey">DESIGN</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="implementation.html">
+          <span class="nav__counter grey">IMPLEMENTATION</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="results.html">
+          <span class="nav__counter grey">RESULTS</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="conclusion.html">
+          <span class="nav__counter grey">CONCLUSION</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="team.html">
+          <span class="nav__counter grey">TEAM</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="addition_resources.html">
+          <span class="nav__counter grey">ADDITION RESOURCES</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container" id='implementation-cont'>
+    <div class="main-content">
+      <div class="loadbox subheading" onclick="toggleShow(event, 'implementation')">
+        <h1 class="grey">Implementation</h1>
+        <div class="loader"></div>
+      </div>
+      <div style="text-align: center; margin-bottom: 50px;">
+        <img src="../img/hardware1.png" height="500px">
+        <img src="../img/hardware2.jpg" height="500px">
+      </div>
+    </div>
+    <div id="implementation" class="text-block">
+      <p>
+        The soft gripper project came with a hardware setup from the EECS 106B lab 4, which includes: an arduino, bend sensor, flex sensor, a pump to provide pressure to the finger, the soft gripper (DragonSkin-30), a board with four dots (in order to use homography), and a depth camera (Intel Realsense camera). Our team also ordered a force sensor as a part of the second half of our project which was to create a model of the external force exerted by the finger at any given angle (though, we did not get to fully complete this goal). <br/><br/>
+        The building of any hardware for our implementation was not required, however, our Software was essential for our data analysis, and finger controller. Our software was broken up into five components: the vision algorithm, controller, flex to angel model and data analysis, MATLAB data analysis and processing, and using nonlinear least squares regression in MATLAB. <br/><br/>
+        Our vision algorithm significantly improved the vision component of lab 4 of EECS 106B. The lab requires students to use a camera to gather data on the angle produced by different flex values, which is used to create a model of flex to angle. The previous vision algorithm gave poor data for creating the model in that the algorithm assumed that the plane of the two blue points used to define the position of the finger and the plane of the board created by four red points behind it, were on the same plane (which is incorrect). The algorithm also used a homography function that took the camera data and projected the plane created by the board back into the camera frame. These issues caused the angle data measured by the camera to have differences, depending on where the camera was physically placed, making each group of student’s data largely different from one another. The vision algorithm we created fixed these issues, creating much more accurate data. We changed the homography function to account for the fact that the finger and the board are not on the same plane and projected the finger position onto the plane of the board, not back into the camera frame. The camera was also having a hard time finding the position of the finger, so we dilated the dots on the finger used to represent the position to be larger, which fixed that issue almost entirely. After implementing the new algorithm, the physical placement of the camera did not change the data gathered by the camera (within a certain range).
+        <br/><br/>
+        Developing the PID controller was a part of creating an external force model for the finger, which our team did not get to however, the controller itself is very accurate. We designed the controller to take in a user angle, user time, and user run-time. The goal was to have the finger reach the desired user angle in the user time, oscillating over the run-time. We created a sinusoidal trajectory to model where the finger should be in some time along the given interval, and used the flex to angle model we generated to track the actual angle of the finger along the given interval. We made an error term by subtracting the angle from the sin trajectory and the actual angle measurement. For the derivative term and flex data, we added a low pass filter due to the large amount of noise produced by the flex data. Using flex data from the arduino, we were able to get the finger to move, but not very accurately. We tuned the proportional, integral, and derivative term to make more accurate movement, which somewhat worked. A feed forward term was then added, utilizing the dynamics model of the finger (and using constants given by our nonlinear least regression). The feed forward term significantly increased the accuracy of the finger and changed our PID terms to only integral and windup terms since the proportional and derivative terms did not increase the accuracy.
+        <br/><br/>
+        The data analysis pipeline that we developed aimed to accurately relate flex to angle. Using the values of flex and flex squared, we fitted a linear model using the least squares algorithm. However, before we could do so, we had to clean the data by removing transient values. Numerous solutions were developed. On way  to remove transients was to remove points that had a large slope between them. Another strategy was to use K-MEANS clustering to obtain two steady state values, one where the angle was high and another were the angle was low. However, the best method was to simply look at which values looked to be in steady state and take the average of those values. <br/><br/>
+      </p>
+    </div>
+  </div>
+
+  <footer></footer>
+</body>
+<script src="../js/showExtraContent.js"></script>
+</html>

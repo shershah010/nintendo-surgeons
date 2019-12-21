@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Nintendo Surgeons</title>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css?family=Inconsolata&display=swap" rel="stylesheet">
+  <link href="../css/styles.css" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <ul>
+      <li role="presentation" class="active">
+        <a href="../../index.html">
+          <span class="nav__counter grey">INTRODUCTION</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="design.html">
+          <span class="nav__counter grey">DESIGN</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="implementation.html">
+          <span class="nav__counter grey">IMPLEMENTATION</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="results.html">
+          <span class="nav__counter grey">RESULTS</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="conclusion.html">
+          <span class="nav__counter grey">CONCLUSION</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="team.html">
+          <span class="nav__counter grey">TEAM</span>
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="addition_resources.html">
+          <span class="nav__counter grey">ADDITION RESOURCES</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container" id='design-cont'>
+    <div class="main-content">
+      <div class="loadbox subheading no-pointer">
+        <h1 class="grey">Design</h1>
+      </div>
+      <div class="text-block" style="margin: 0;">
+        <p>
+          Soft grippers have attracted the attention of many researchers because of their real life usefulness in carrying out many tasks which are not possible to be done using hard objects. Their human centric design makes them even more compelling to study in greater detail. One of the applications of soft grippers is in the design of the bionic organs - arms, hands, legs etc. <br/><br/>
+          For a human centric device the design criteria has to be the experience it gives to the user of the product so their tardy looking response curve is not a trade off but an opportunity to model the human like responses using soft grippers. <br/><br/>
+          In this project the some of the primary design criteria were to choose between DragonSkin 30 or EcoFlex30, model based control or hard wired control, linear model, simple elastic or hyperelastic models of soft gripper, model the soft gripper as RPPR or RPR rigid body arm. <br/><br/>
+          The ultimate design objective was to accurately control the bend of the finger along with time response i.e. how accurately the finger can bend a specified angle theta in given time T. <br/><br/>
+          We decided to use the DragonSkin-30 finger as a first step with a view to test the EcoFlex-30 based gripper subject to availability of time. <br/><br/>
+          After quickly making the set up functional we studied the dynamics of the system extensively and worked on finding a model relationship between flex output and bend angle which turned out to be second order linear model. Sher developed a robust model and could also figure out that the flex sensor has a lot of drift. In certain cases when finger is not moving even then the flex sensor is showing large values of flex. <br/><br/>
+          After fully understanding the dynamics and model of relationship between bend angle and flex values we collected a good amount of dynamics data points and proceeded for finding the system parameters using the non linear least squares methods employing the  ‘trust region reflective’ algorithm in MATLAB. We were expecting to get unique values of K (stiffness), D (damping factor), &alpha; (Motor model)  and &gamma; (elasticity of finger) for the entire range of the data but we got different sets of data for varying pwm values. In the absence of much evidence it is hard to say but it appeared that every time we got our parameter on local minima of the cost function. We also tried to model the finger using the hyperelastic model but due to lack of our insight in material science we could not get a reliable solution to the hyperelastic model parameters and we decided to carry on with non-linear model and we found good prediction in using our mixed model parameters. <br/><br/>
+          Now we turned to design a PID controller using the non linear model parameters to decide the feed forward term. The design criteria for controller was to control the finger response in space and time simultaneously and it turned out after an iterative process that the controller gives best results with only an integral term without any need for proportional and derivative components. <br/><br/>
+          The controller worked well and it does control the finger response well. We feel that with further work the model can be made more accurate using the hyper elastic model in future labs of 106B.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <footer></footer>
+</body>
+<script src="../js/showExtraContent.js"></script>
+</html>
