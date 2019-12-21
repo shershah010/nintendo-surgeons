@@ -86,6 +86,13 @@
 </figcaption>
         </figure>
         <h3 class="fig-subheading grey">Angle and PWM Over Time Lead By Controller</h3>
+        <p class="super-side-margins">
+          We primarily tested the controller at 30 degrees, 45 degrees and 60 degrees, all in 10 seconds. For each trial, the finger steadily moved to the desired angle in 10 seconds very accurately. Whenever the finger would return back to 0 degrees, it would slightly oscillate quite roughly for about 1-2 seconds.
+        </p>
+        <br/>
+        <p class="super-side-margins">
+          As evidenced by the graphs, the controller worked fairly well in that it closely followed the desired trajectory. The error (seen in green) is the largest at lower angles, which corresponds to lower PWM values. This was expected as we did not train the model to adjust itself at lower PWM values. Experimentation on the PWM values revealed that the finger works quite poorly at lower PWMs (about 0-50 in the total range of 0-200) in that any PWM value less than 20 does not move the finger at all and a PWM of 30 causes resonance effects on the finger, which causes it to violently oscillate. The error at the top of the sinusoid (the desired angle), was likely due to an inaccuracy in the model that converts flex to angle, which outputted the actual angle as 2-5 degrees below what it was in reality. This issue could have solved with a more accurate flex sensor or training the model to account for this error, since the flex data can be odd at times. The PWM outputted by our controller was also very close to the expected PWM output to follow the desired trajectory. Through some experimentation, we found that the feed forward term created by the finger dynamics very closely resembled a feed forward term made by slightly altering our desired trajectory sinusoid. This finding suggested that the data we had gathered to make our flex to angle model as well as our dynamics model was fairly accurate (with the exception of the flex sensor data being off by the fact that the sensor itself is quite inexpensive).
+        </p>
         <figure style="text-align: center; display: none">
           <iframe width="960" height="600" src="https://www.youtube.com/embed/6WV-j4O7e8Q?loop=1&control=0&autoplay=1"></iframe>
         </figure>
